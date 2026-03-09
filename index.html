@@ -2,95 +2,157 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Caja de Cobro USD</title>
+<title>Caja Cambio de Dólares</title>
 
 <style>
+
 body{
 font-family: Arial;
-background:#f2f2f2;
+background:#121212;
+color:white;
 display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;
+min-height:100vh;
 }
 
 .caja{
-background:white;
-padding:30px;
+background:#1f1f1f;
+padding:25px;
 border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.2);
-width:300px;
+width:380px;
+box-shadow:0 0 20px rgba(0,0,0,0.6);
+}
+
+h2{
 text-align:center;
 }
 
 input{
 width:100%;
-padding:10px;
-margin:10px 0;
+padding:12px;
+margin-top:10px;
 font-size:16px;
+border:none;
+border-radius:5px;
 }
 
 button{
-background:#28a745;
-color:white;
-border:none;
-padding:10px;
+margin-top:10px;
 width:100%;
-font-size:16px;
+padding:12px;
+border:none;
 border-radius:5px;
+font-size:16px;
 cursor:pointer;
 }
 
-button:hover{
-background:#218838;
+.calcular{
+background:#00c853;
+color:white;
+}
+
+.limpiar{
+background:#ff5252;
+color:white;
 }
 
 .resultado{
 margin-top:15px;
-font-weight:bold;
+font-size:18px;
 }
+
+.historial{
+margin-top:20px;
+max-height:150px;
+overflow:auto;
+background:#2b2b2b;
+padding:10px;
+border-radius:5px;
+}
+
 </style>
+
 </head>
 
 <body>
 
 <div class="caja">
 
-<h2>Caja USD</h2>
+<h2>Caja Compra de Dólares</h2>
 
-<label>Total a pagar ($)</label>
-<input type="number" id="total">
+<p>Tipo de cambio: <b>1 USD = Q6</b></p>
 
-<label>Cliente paga ($)</label>
-<input type="number" id="pago">
+<label>Dólares recibidos</label>
+<input type="number" id="dolares">
 
-<button onclick="calcular()">Calcular Vuelto</button>
+<label>Quetzales entregados</label>
+<input type="number" id="quetzales">
+
+<button class="calcular" onclick="calcular()">Calcular</button>
+<button class="limpiar" onclick="limpiar()">Limpiar</button>
 
 <div class="resultado" id="resultado"></div>
+
+<h3>Historial</h3>
+<div class="historial" id="historial"></div>
 
 </div>
 
 <script>
 
-const tasa = 6;
+let tasa = 6;
+let historial = [];
 
 function calcular(){
 
-let total = parseFloat(document.getElementById("total").value);
-let pago = parseFloat(document.getElementById("pago").value);
+let dolares = parseFloat(document.getElementById("dolares").value);
+let quetzales = parseFloat(document.getElementById("quetzales").value);
 
-if(pago < total){
-document.getElementById("resultado").innerHTML = "Pago insuficiente";
-return;
+let pagoCorrecto = dolares * tasa;
+let diferencia = quetzales - pagoCorrecto;
+
+let texto = "";
+
+texto += "Debes pagar: Q" + pagoCorrecto.toFixed(2) + "<br>";
+
+if(diferencia > 0){
+texto += "Diste de más: Q" + diferencia.toFixed(2);
+}
+else if(diferencia < 0){
+texto += "Faltan: Q" + Math.abs(diferencia).toFixed(2);
+}
+else{
+texto += "Pago exacto";
 }
 
-let vueltoUSD = pago - total;
-let vueltoGTQ = vueltoUSD * tasa;
+document.getElementById("resultado").innerHTML = texto;
 
-document.getElementById("resultado").innerHTML =
-"Vuelto: $" + vueltoUSD.toFixed(2) +
-"<br>" +
-"Equivale a: Q" + vueltoGTQ.toFixed(2);
+let registro = "$" + dolares + " → Q" + pagoCorrecto.toFixed(2);
+
+historial.push(registro);
+
+mostrarHistorial();
+
+}
+
+function mostrarHistorial(){
+
+let html = "";
+
+for(let i=0;i<historial.length;i++){
+html += historial[i] + "<br>";
+}
+
+document.getElementById("historial").innerHTML = html;
+
+}
+
+function limpiar(){
+
+document.getElementById("dolares").value="";
+document.getElementById("quetzales").value="";
+document.getElementById("resultado").innerHTML="";
 
 }
 
